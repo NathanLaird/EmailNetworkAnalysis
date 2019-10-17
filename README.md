@@ -73,6 +73,17 @@ To view this from a more Heirachical perspective I changed the starting position
 
 Starting in this position yeilds even more defined tendrils potentially indicating a potential discovery of divisions. users who communicate heavily with each other but less so outside thier tendril
 
+Using Job title data I looked through users with a strong relation to Jeff Skelling, does proximity to the CEO predict job status ie President VP Director.
+
+<img src="https://github.com/NathanLaird/Enron/blob/master/Viz/Heirarchy_with_JobTitle.png?raw=true" align="center" width = "500" />
+
+While most users close to Jeff were Presedents and VPs several were employees indicating that while proximity to the CEO is a strong idicator of being an important member of the company it is not absoloute.
+
+I next clustered users into respective levels and vizualized the network in a heirachical form
+
+this visualization shows the edges for each group of nodes separately to illistrate how the different levels connect to one another
+<img src="https://github.com/NathanLaird/Enron/blob/master/Viz/HeirarchyModel.gif?raw=true" align="center" width = "500" />
+
 ### Evaluation
 
 
