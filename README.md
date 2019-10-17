@@ -35,52 +35,51 @@ While working at Netskope I became fascinated helping others manage risk and unc
 
 ### Data Sources
 
-* [Comprehensive, Multi-Source Cyber-Security Events](https://csr.lanl.gov/data/cyber1/) 
+* [CMU Enron Dataset](https://www.cs.cmu.edu/~enron/) 
 
-* Auth.txt - Contains All Authentification Events for the Network, used to identify human owned computers
-<img src="Viz/Human_Filtered_Auth.png" align="center" width = "500" />
-* Flow.txt - contains all data flows in the network with source IP Destination IP and ByteCount
-<img src="Viz/Flow_initial.png" align="center" width = "500" />
-Redteam.txt - contains a list of all compromised machines
+* Emails - Contains the subject and body of the emails with a reference column mid(message id)
+
+<img src="Viz/Email_df.png" align="center" width = "500" />
+
+* Email Reference - Contains a mapping of messeage ids to its recipients
+
+<img src="Viz/Reference_df.png" align="center" width = "400" />
+
+* Jobs - Contains a maping Enron users to thier job title and level, many missing values, 42 values missing for Job Rank
 
 
+<img src="Viz/Jobs_df.png" align="center" width = "400" />
 
 ### Data Processing
 
-To deal with the 100GB of Log data Computation for Data Processing is outsourced to an EMR cluster composed on EC2s running spark queries.
+To create a network of emails, we create a square zero matrix with length equal our number of users. Then, Iterating through all messages increase the weights in the matrix  between sender and reciver.
 
-In order to filter down to only human owned computers we look for the IPs of computer making 
+for each non zero entry in the matrix create an edge between the sender and reciever node in the network
 
-Interactive Logins using known employee accounts.
+A Note - this creates incredible dense graphs that are hard to visualize
+<img src="https://github.com/NathanLaird/Enron/blob/master/Viz/Dense_Full_Network.png?raw=true" align="center" width = "500" />
 
-To create the DataFrame of compromised users we additional filter down to where dstIP and srcIP are in the list of compromised users.
+In order to create networks which are less dense and to limit the number of neighbors for each node, create a threshold percentage and remove all edges that have weight less the desired percentile
 
-Once Human users have been identified, we filter Flow.txt to include on those records whose srcIP or dstIP is a human user.
+To Begin Looking at the network of Users I selected Jeff Skelling as central figure and arranged the network based on each nodes distance to Jeff Skelling
 
-depending on whether a flow begins or terminates on a known users we assign it as either Upload or Download.
+<img src="https://github.com/NathanLaird/Enron/blob/master/Viz/Spring_Proximity_Jeff.gif?raw=true" align="center" width = "500" />
 
-Using Upload/Download and the size of the flow transfer, we fill in Upload_Bytes and Download_Bytes accordingly.
+Here nodes are colored by thier proximity to Jeff and are pulled towards thier other neighbors. this creates a graph with multiple tendrils which Jeff looks like a singe arm of.
 
-Using Upload/Download and the dstIP and srcIP, we fill in user and service accordingly.
+To view this from a more Heirachical perspective I changed the starting position to be a tree originating with Jeff in red.
 
-Filled_DataFrame_Flow.png
-<img src="Viz/Filled_DataFrame_Flow.png" align="center" width = "500" />
+<img src="https://github.com/NathanLaird/Enron/blob/master/Viz/Spring_Proximity_Jeff_from%20Heirarchy_model_nodes.gif?raw=true" align="center" width = "500" />
 
-we then summarize these flow events by time interval and user to create a time series of data transfers up and down as well as a distribution of data movements for all users.
-
-<img src="Viz/TrafficDataPlusUsers.png" align="center" width = "500" />
+Starting in this position yeilds even more defined tendrils potentially indicating a potential discovery of divisions. users who communicate heavily with each other but less so outside thier tendril
 
 ### Evaluation
 
-To determine if there was a difference in means in the upload of individuals from the Total Population versus the Compromised Populations, We run a Mann-Whitney U Test. Our Alpha for this process should be fairly low to account for the sensitive nature of misidentifying a compromised user, .01.
 
-our calculated p-value comes to 1.2472e-20, giving us ample evidence to reject the null hypothesis that, there is a 50% chance any random item from Compromised exceeds any random item from total
-<img src="Viz/Dist_Hists.png" align="center" width = "500" />
+
 
 ## Future Improvements
-* perform analysis on distribution of services visited
-* use KDEs to identify protentially compromised machines
-<img src="Viz/KDE.png" align="center" width = "500" />
+
 
 ## Built With
 
